@@ -20,8 +20,7 @@ From: openjdk:11
     tar -pxvzf panther-data-14.1.tar.gz -C /opt/interproscan/data
     rm -f panther-data-14.1.tar.gz
     cd /opt/interproscan/
-    wget "https://github.com/Micromeda/InterProScan-Docker/raw/master/threaded_interproscan.sh"
-    sed -i 's|\./|/opt/|g' threaded_interproscan.sh
+    wget "https://github.com/meso-uca/interproscan-singularity/raw/main/threaded_interproscan.sh"
     chmod +x /opt/interproscan/threaded_interproscan.sh
     /opt/interproscan/threaded_interproscan.sh || true
 
