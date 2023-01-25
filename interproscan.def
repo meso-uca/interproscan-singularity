@@ -1,0 +1,41 @@
+Bootstrap: docker
+From: openjdk:11
+
+%files
+    ./threaded_interproscan.sh /opt/interproscan/
+
+%post
+    export IPR=5
+    export IPRSCAN="$IPR.60-92.0"
+    apt-get -y update
+    apt-get -y install libgomp1 libdw1 libpcre3-dev
+    rm -rf /var/lib/apt/lists/*
+    mkdir -p /opt
+    cd /opt/
+    curl -o /opt/interproscan-$IPRSCAN-64-bit.tar.gz ftp://ftp.ebi.ac.uk/pub/software/unix/iprscan/$IPR/$IPRSCAN/interproscan-$IPRSCAN-64-bit.tar.gz
+    curl -o /opt/panther-data-14.1.tar.gz ftp://ftp.ebi.ac.uk/pub/software/unix/iprscan/$IPR/data/panther-data-14.1.tar.gz
+    mkdir -p /opt/interproscan
+    tar -pxvzf interproscan-$IPRSCAN-64-bit.tar.gz -C /opt/interproscan --strip-components=1
+    rm -f interproscan-$IPRSCAN-64-bit.tar.gz
+    tar -pxvzf panther-data-14.1.tar.gz -C /opt/interproscan/data
+    rm -f panther-data-14.1.tar.gz
+    cd /opt/interproscan/
+    wget "https://github.com/Micromeda/InterProScan-Docker/raw/master/threaded_interproscan.sh"
+    sed -i 's|\./|/opt/|g' threaded_interproscan.sh
+    chmod +x /opt/interproscan/threaded_interproscan.sh
+    /opt/interproscan/threaded_interproscan.sh || true
+
+%environment
+    export IPR=5
+    export IPRSCAN="$IPR.60-92.0"
+
+%labels
+    Author David Grimbichler
+    Version v0.0.1
+
+%help
+    Interproscan singularity file
+
+%runscript
+    /bin/bash /opt/interproscan/threaded_interproscan.sh "$@"
+
